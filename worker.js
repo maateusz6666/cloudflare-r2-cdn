@@ -3,6 +3,18 @@ export default {
     const url = new URL(request.url);
     const pathname = url.pathname;
 
+    // === [CORS Preflight] ===
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, PUT, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
+      });
+    }
+
     // === [UPLOAD] ===
     if (request.method === "PUT" && pathname.startsWith("/upload/")) {
       const key = pathname.replace("/upload/", "");
@@ -21,7 +33,10 @@ export default {
 
       const url = `https://${request.headers.get("host")}/${key}`;
       return new Response(JSON.stringify({ success: true, url }), {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
       });
     }
 
@@ -34,7 +49,10 @@ export default {
 
       const object = await env.R2.get(key);
       if (!object) {
-        return new Response("Not Found", { status: 404 });
+        return new Response("Not Found", {
+          status: 404,
+          headers: { "Access-Control-Allow-Origin": "*" },
+        });
       }
 
       return new Response(object.body, {
@@ -47,6 +65,10 @@ export default {
       });
     }
 
-    return new Response("Method Not Allowed", { status: 405 });
+    // === [Fallback] ===
+    return new Response("Method Not Allowed", {
+      status: 405,
+      headers: { "Access-Control-Allow-Origin": "*" },
+    });
   },
 };
