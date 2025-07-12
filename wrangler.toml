@@ -1,0 +1,10 @@
+name = "r2-cdn"
+main = "worker.js"
+compatibility_date = "2025-07-12"
+
+account_id = "7b6e625cc5a1688bdbcf867320fbdbb4"   # znajdziesz w dash.cloudflare.com → Workers & Pages
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "storage"       # NAZWA TWOJEGO BUCKETU R2
+preview_bucket_name = "storage"
